@@ -1,0 +1,6 @@
+LIBRARY
+	EXPORTS
+		AR_DriverLoad
+		AR_UnDriverLoad
+		AR_GetMoudle
+		AR_ReadMemory

@@ -1,0 +1,49 @@
+#include "CommStruct.h"
+#include "CommR3.h"
+#include "LoadDriver.h"
+#include "Api.h"
+
+LPCWSTR DriverName = getRandomSysServiceName();
+LPCWSTR DriverDir = getRandomSysDir();
+
+EXTERN_C BOOLEAN WINAPI AR_TestComm() {
+
+	ULONG64 xx;
+
+	return DriverComm(CMD_TEST, &xx, sizeof(xx));
+
+}
+
+EXTERN_C BOOLEAN WINAPI AR_DriverLoad() {
+	if (AR_TestComm()) {
+		return TRUE;
+	}
+	return installDriver(DriverName, DriverDir);
+}
+
+EXTERN_C BOOLEAN WINAPI AR_UnDriverLoad() {
+	
+	return UnLoadDriver(DriverName);
+}
+
+
+
+EXTERN_C ULONG64 WINAPI AR_GetMoudle(DWORD Pid, char* moduleName) {
+	ModuleInfo info = { 0 };
+	info.Pid = Pid;
+	info.ModuleName = (ULONG64)moduleName;
+
+	DriverComm(CMD_GETMODULE, &info, sizeof(ModuleInfo));
+
+	return info.Module;
+}
+
+EXTERN_C BOOLEAN WINAPI AR_ReadMemory(DWORD pid, ULONG64 BaseAddress, PVOID Buffer, ULONG size) {
+	ReadWriteInfo info = { 0 };
+	info.pid = pid;
+	info.BaseAddress = BaseAddress;
+	info.Buffer = (ULONG64)Buffer;
+	info.size = size;
+
+	return DriverComm(CMD_READ, &info, sizeof(ReadWriteInfo));
+}
