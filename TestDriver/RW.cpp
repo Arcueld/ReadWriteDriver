@@ -1,6 +1,7 @@
 #include <intrin.h>
 #include "RW.h"
 #include "Search.h"
+#include "RwHelper.h"
 
 PVOID MDLMapMemory(OUT PMDL* mdl,PVOID TargetAddr,SIZE_T size,MODE previousMode) {
 	PMDL pMdl = IoAllocateMdl(TargetAddr,size,FALSE,FALSE,NULL);
@@ -239,36 +240,42 @@ NTSTATUS WriteMemory1(HANDLE Pid, PVOID TargetAddr, PVOID buffer, SIZE_T size) {
 		return STATUS_INVALID_PARAMETER_1;
 	}
 
+	status = STATUS_UNSUCCESSFUL;
+
+
 	SIZE_T retSize = 0;
-	status = MmCopyVirtualMemory(IoGetCurrentProcess(), buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+	PEPROCESS currentProcess = IoGetCurrentProcess();
+	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+	if (NT_SUCCESS(status)) {
+		ObDereferenceObject(pEprocess);
+		return status;
+	}
+	KeStackAttachProcess(pEprocess, &apcState);
+	PVOID baseAddr = TargetAddr;
+	SIZE_T tmpSize = size;
+	ULONG oldProtect = NULL;
+	status = NtProtectVirtualMemory(NtCurrentProcess(), &baseAddr,&tmpSize,PAGE_EXECUTE_READWRITE,&oldProtect);
+	if (NT_SUCCESS(status)) {
+		status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+		NtProtectVirtualMemory(NtCurrentProcess(), &baseAddr, &tmpSize, oldProtect, &oldProtect);
+		
+	}
+	KeUnstackDetachProcess(&apcState);
+	if (NT_SUCCESS(status)) {
+		ObDereferenceObject(pEprocess);
+		return status;
+	}
+	
+	KIRQL Oldirql = DisableCR0WriteProtection();
+	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+	EnableCR0WriteProtection(Oldirql);
+
 	if (NT_SUCCESS(status)) {
 		ObDereferenceObject(pEprocess);
 		return status;
 	}
 
-
-
-
-	status = STATUS_UNSUCCESSFUL;
-
-	PVOID pMem = ExAllocatePool(NonPagedPool, size);
-	memset(pMem, 0, size);
-
-	KeStackAttachProcess(pEprocess, &apcState);
-
-	if (MmIsAddressValid(TargetAddr) && MmIsAddressValid((PVOID)((ULONG64)TargetAddr + size - 1))) {
-		memcpy(pMem, TargetAddr, size);
-		status = STATUS_SUCCESS;
-	}
-
-	KeUnstackDetachProcess(&apcState);
-
-	if (NT_SUCCESS(status)) {
-		memcpy(buffer, pMem, size);
-	}
 	ObDereferenceObject(pEprocess);
-	ExFreePool(pMem);
-
 	return status;
 
 }

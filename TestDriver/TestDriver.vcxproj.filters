@@ -34,6 +34,9 @@
     <ClCompile Include="RW.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RwHelper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -46,6 +49,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RwHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -151,12 +151,14 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="Module.c" />
     <ClCompile Include="RW.cpp" />
+    <ClCompile Include="RwHelper.c" />
     <ClCompile Include="Search.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comm.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="RW.h" />
+    <ClInclude Include="RwHelper.h" />
     <ClInclude Include="Search.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
