@@ -47,3 +47,12 @@ EXTERN_C BOOLEAN WINAPI AR_ReadMemory(DWORD pid, ULONG64 BaseAddress, PVOID Buff
 
 	return DriverComm(CMD_READ, &info, sizeof(ReadWriteInfo));
 }
+EXTERN_C BOOLEAN WINAPI AR_WriteMemory(DWORD pid, ULONG64 BaseAddress, PVOID Buffer, ULONG size) {
+	ReadWriteInfo info = { 0 };
+	info.pid = pid;
+	info.BaseAddress = BaseAddress;
+	info.Buffer = (ULONG64)Buffer;
+	info.size = size;
+
+	return DriverComm(CMD_WRITE, &info, sizeof(ReadWriteInfo));
+}

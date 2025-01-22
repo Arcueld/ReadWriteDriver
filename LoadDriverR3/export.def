@@ -4,3 +4,4 @@ LIBRARY
 		AR_UnDriverLoad
 		AR_GetMoudle
 		AR_ReadMemory
+		AR_WriteMemory

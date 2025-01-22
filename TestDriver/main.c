@@ -33,6 +33,14 @@ NTSTATUS NTAPI testCommCallBackProc(PCommPackage package) {
         DbgPrintEx(77, 0, "status [+]: %x\n", status);
 
     }
+    case CMD_WRITE: {
+        DbgPrintEx(77, 0, "StartWrite\n");
+        PReadWriteInfo info = (PReadWriteInfo)data;
+        if (info) {
+            status = WriteMemory1(info->pid, info->BaseAddress, info->Buffer, info->size);
+        }
+
+    }
     default:
         status = STATUS_NOT_IMPLEMENTED;
         break;

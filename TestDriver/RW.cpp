@@ -245,7 +245,10 @@ NTSTATUS WriteMemory1(HANDLE Pid, PVOID TargetAddr, PVOID buffer, SIZE_T size) {
 
 	SIZE_T retSize = 0;
 	PEPROCESS currentProcess = IoGetCurrentProcess();
+	DbgPrintEx(77, 0, "try Write1\n");
 	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+	DbgPrintEx(77, 0, "%x\n", status);
+
 	if (NT_SUCCESS(status)) {
 		ObDereferenceObject(pEprocess);
 		return status;
@@ -255,8 +258,13 @@ NTSTATUS WriteMemory1(HANDLE Pid, PVOID TargetAddr, PVOID buffer, SIZE_T size) {
 	SIZE_T tmpSize = size;
 	ULONG oldProtect = NULL;
 	status = NtProtectVirtualMemory(NtCurrentProcess(), &baseAddr,&tmpSize,PAGE_EXECUTE_READWRITE,&oldProtect);
+	DbgPrintEx(77, 0, "protect status %x\n", status);
+
 	if (NT_SUCCESS(status)) {
+		DbgPrintEx(77, 0, "try Write2\n");
 		status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+		DbgPrintEx(77, 0, "%x\n", status);
+
 		NtProtectVirtualMemory(NtCurrentProcess(), &baseAddr, &tmpSize, oldProtect, &oldProtect);
 		
 	}
@@ -267,7 +275,10 @@ NTSTATUS WriteMemory1(HANDLE Pid, PVOID TargetAddr, PVOID buffer, SIZE_T size) {
 	}
 	
 	KIRQL Oldirql = DisableCR0WriteProtection();
+	DbgPrintEx(77, 0, "try Write3\n");
 	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+	DbgPrintEx(77, 0, "%x\n", status);
+
 	EnableCR0WriteProtection(Oldirql);
 
 	if (NT_SUCCESS(status)) {

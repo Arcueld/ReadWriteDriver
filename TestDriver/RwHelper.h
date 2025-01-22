@@ -9,7 +9,7 @@ typedef NTSTATUS(NTAPI* pNtProtectVirtualMemory)(
     _Out_ PULONG OldProtection
     );
 
-NTSTATUS(NTAPI NtProtectVirtualMemory)(
+EXTERN_C NTSTATUS(NTAPI NtProtectVirtualMemory)(
     _In_ HANDLE ProcessHandle,
     _Inout_ PVOID* BaseAddress,
     _Inout_ PSIZE_T RegionSize,
@@ -17,5 +17,5 @@ NTSTATUS(NTAPI NtProtectVirtualMemory)(
     _Out_ PULONG OldProtection
     );
 
-KIRQL DisableCR0WriteProtection();
-void EnableCR0WriteProtection(KIRQL irql);
+EXTERN_C KIRQL DisableCR0WriteProtection();
+EXTERN_C void EnableCR0WriteProtection(KIRQL irql);
