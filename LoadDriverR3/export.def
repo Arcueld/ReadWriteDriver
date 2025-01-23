@@ -5,3 +5,4 @@ LIBRARY
 		AR_GetMoudle
 		AR_ReadMemory
 		AR_WriteMemory
+		AR_QueryMemory

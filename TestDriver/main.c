@@ -29,9 +29,10 @@ NTSTATUS NTAPI testCommCallBackProc(PCommPackage package) {
         PReadWriteInfo info = (PReadWriteInfo)data;
         if (info) {
            status = ReadMemory3(info->pid, info->BaseAddress, info->Buffer, info->size);
-        }
-        DbgPrintEx(77, 0, "status [+]: %x\n", status);
+           DbgPrintEx(77, 0, "status [+]: %x\n", status);
 
+        }
+        break;
     }
     case CMD_WRITE: {
         DbgPrintEx(77, 0, "StartWrite\n");
@@ -39,7 +40,12 @@ NTSTATUS NTAPI testCommCallBackProc(PCommPackage package) {
         if (info) {
             status = WriteMemory1(info->pid, info->BaseAddress, info->Buffer, info->size);
         }
+        break;
+    }case CMD_QUERY_MEM: {
+        PQueryMemInfo info = (PQueryMemInfo)data;
+        status = QueryMemory(info->pid, info->BaseAddress, &info->memInfo);
 
+        break;
     }
     default:
         status = STATUS_NOT_IMPLEMENTED;

@@ -11,7 +11,7 @@ NTSTATUS(NTAPI NtProtectVirtualMemory)(
     static pNtProtectVirtualMemory ZwProtectVirtualMemory = NULL;
     if (!ZwProtectVirtualMemory) {
         UNICODE_STRING uName = { 0 };
-        RtlInitUnicodeString(&uName, "ZwIsProcessInJob");
+        RtlInitUnicodeString(&uName, L"ZwIsProcessInJob");
         PUCHAR func = (PUCHAR)MmGetSystemRoutineAddress(&uName);
         if (func) {
             func += 20;
@@ -33,24 +33,15 @@ NTSTATUS(NTAPI NtProtectVirtualMemory)(
 }
 
 
-void EnableCR0WriteProtection(KIRQL irql)
-{
-    UINT64 cr0 = __readcr0();
-    cr0 |= 0x10000;
+void EnableCR0WriteProtection(){
+    __writecr0(__readcr0() | 0x10000);
     _enable();
-    __writecr0(cr0);
-    KeLowerIrql(irql);
+
 }
 
 
 
-KIRQL DisableCR0WriteProtection()
-{
-    KIRQL irql = KeRaiseIrqlToDpcLevel();
-    UINT64 cr0 = __readcr0();
-    cr0 &= 0xfffffffffffeffff;
-    __writecr0(cr0);
+void DisableCR0WriteProtection(){
     _disable();
-    return irql;
-
+    __writecr0(__readcr0() &(~0x10000));
 }

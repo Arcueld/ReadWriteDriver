@@ -19,7 +19,8 @@ typedef enum _CMD {
     CMD_TEST,
     CMD_GETMODULE,
     CMD_READ,
-    CMD_WRITE
+    CMD_WRITE,
+    CMD_QUERY_MEM
 }CMD;
 
 typedef struct _ModuleInfo {
@@ -36,3 +37,10 @@ typedef struct _ReadWriteInfo
     ULONG64 Buffer;
     ULONG64 size;
 }ReadWriteInfo, * PReadWriteInfo;
+
+typedef struct _QueryMemInfo
+{
+    ULONG64 pid;
+    ULONG64 BaseAddress;
+    MEMORY_BASIC_INFORMATION memInfo;
+}QueryMemInfo, * PQueryMemInfo;

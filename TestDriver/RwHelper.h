@@ -17,5 +17,5 @@ EXTERN_C NTSTATUS(NTAPI NtProtectVirtualMemory)(
     _Out_ PULONG OldProtection
     );
 
-EXTERN_C KIRQL DisableCR0WriteProtection();
-EXTERN_C void EnableCR0WriteProtection(KIRQL irql);
+EXTERN_C void EnableCR0WriteProtection();
+EXTERN_C void DisableCR0WriteProtection();

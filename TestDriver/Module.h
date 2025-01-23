@@ -731,3 +731,29 @@ EXTERN_C NTSTATUS MmCopyVirtualMemory(
 
 
 ULONG_PTR GetModuleR3(HANDLE Pid, char* ModuleName, PULONG_PTR sizeImage);
+
+
+typedef struct _MMEMORY_BASIC_INFORMATION
+{
+    ULONG64 BaseAddress;
+    ULONG64 AllocationBase;
+    ULONG64 AllocationProtect;
+    ULONG64 RegionSize;
+    ULONG64 State;
+    ULONG64 Protect;
+    ULONG64 Type;
+} MMEMORY_BASIC_INFORMATION, * PMMEMORY_BASIC_INFORMATION;
+
+// typedef struct _MEMORY_BASIC_INFORMATION32
+// {
+// 	ULONG BaseAddress;
+// 	ULONG AllocationBase;
+// 	ULONG AllocationProtect;
+// 	ULONG RegionSize;
+// 	ULONG State;
+// 	ULONG Protect;
+// 	ULONG Type;
+// } MEMORY_BASIC_INFORMATION32, * PMEMORY_BASIC_INFORMATION32;
+
+NTSTATUS QueryMemory(HANDLE pid, ULONG64 targetAddr, PMEMORY_BASIC_INFORMATION pInfo);
+

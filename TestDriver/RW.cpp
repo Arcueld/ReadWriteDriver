@@ -245,46 +245,47 @@ NTSTATUS WriteMemory1(HANDLE Pid, PVOID TargetAddr, PVOID buffer, SIZE_T size) {
 
 	SIZE_T retSize = 0;
 	PEPROCESS currentProcess = IoGetCurrentProcess();
-	DbgPrintEx(77, 0, "try Write1\n");
-	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
-	DbgPrintEx(77, 0, "%x\n", status);
 
-	if (NT_SUCCESS(status)) {
+
+	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
+
+	if (NT_SUCCESS(status) && retSize == size) {
 		ObDereferenceObject(pEprocess);
 		return status;
 	}
+
 	KeStackAttachProcess(pEprocess, &apcState);
 	PVOID baseAddr = TargetAddr;
 	SIZE_T tmpSize = size;
 	ULONG oldProtect = NULL;
 	status = NtProtectVirtualMemory(NtCurrentProcess(), &baseAddr,&tmpSize,PAGE_EXECUTE_READWRITE,&oldProtect);
-	DbgPrintEx(77, 0, "protect status %x\n", status);
+
 
 	if (NT_SUCCESS(status)) {
 		DbgPrintEx(77, 0, "try Write2\n");
+		DbgPrintEx(77, 0, "buffer %llx\n", buffer);
+		retSize = 0;
 		status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
 		DbgPrintEx(77, 0, "%x\n", status);
-
 		NtProtectVirtualMemory(NtCurrentProcess(), &baseAddr, &tmpSize, oldProtect, &oldProtect);
 		
 	}
 	KeUnstackDetachProcess(&apcState);
-	if (NT_SUCCESS(status)) {
+
+	if (NT_SUCCESS(status) && retSize == size) {
 		ObDereferenceObject(pEprocess);
 		return status;
 	}
-	
-	KIRQL Oldirql = DisableCR0WriteProtection();
+
 	DbgPrintEx(77, 0, "try Write3\n");
+
+	DisableCR0WriteProtection();
+	retSize = 0;
 	status = MmCopyVirtualMemory(currentProcess, buffer, pEprocess, TargetAddr, size, UserMode, &retSize);
 	DbgPrintEx(77, 0, "%x\n", status);
+	EnableCR0WriteProtection();
 
-	EnableCR0WriteProtection(Oldirql);
 
-	if (NT_SUCCESS(status)) {
-		ObDereferenceObject(pEprocess);
-		return status;
-	}
 
 	ObDereferenceObject(pEprocess);
 	return status;

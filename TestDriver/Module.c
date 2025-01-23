@@ -98,3 +98,38 @@ ULONG_PTR GetModuleR3(HANDLE Pid,char* ModuleName,PULONG_PTR sizeImage) {
 
 	return retModule;
 }
+
+NTSTATUS QueryMemory(HANDLE pid, ULONG64 targetAddr, PMEMORY_BASIC_INFORMATION pInfo) {
+	if (!pInfo) return STATUS_UNSUCCESSFUL;
+	PEPROCESS pEprocess = { 0 };
+	KAPC_STATE apcState = { 0 };
+	NTSTATUS status = PsLookupProcessByProcessId(pid, &pEprocess);
+	if (!NT_SUCCESS(status)) {
+		return STATUS_UNSUCCESSFUL;
+	}
+	PMEMORY_BASIC_INFORMATION memInfo = (PMEMORY_BASIC_INFORMATION)ExAllocatePool(NonPagedPool, sizeof(MEMORY_BASIC_INFORMATION));
+	memset(memInfo, 0, sizeof(MEMORY_BASIC_INFORMATION));
+	SIZE_T retSize = 0;
+
+	KeStackAttachProcess(pEprocess, &apcState);
+	status = ZwQueryVirtualMemory(NtCurrentProcess(), targetAddr, MemoryBasicInformation, memInfo, sizeof(MEMORY_BASIC_INFORMATION), &retSize);
+	KeUnstackDetachProcess(&apcState);
+
+
+	if (NT_SUCCESS(status)) {
+		pInfo->AllocationBase = memInfo->AllocationBase;
+		pInfo->AllocationProtect = memInfo->AllocationProtect;
+		pInfo->BaseAddress = memInfo->BaseAddress;
+		pInfo->Protect = memInfo->Protect;
+		pInfo->RegionSize = memInfo->RegionSize;
+		pInfo->State = memInfo->State;
+		pInfo->Type = memInfo->Type;
+	}
+
+
+	
+	ObDereferenceObject(pEprocess);
+	ExFreePool(memInfo);
+
+	return status;
+}
