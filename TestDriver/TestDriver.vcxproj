@@ -49,6 +49,7 @@
     <PlatformToolset>WindowsKernelModeDriver10.0</PlatformToolset>
     <ConfigurationType>Driver</ConfigurationType>
     <DriverType>WDM</DriverType>
+    <Driver_SpectreMitigation>Spectre</Driver_SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <TargetVersion>Windows10</TargetVersion>
@@ -116,9 +117,12 @@
     <ClCompile>
       <TreatWarningAsError>false</TreatWarningAsError>
       <PreprocessorDefinitions>KERNEL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
     </ClCompile>
     <Link>
       <TreatLinkerWarningAsErrors>false</TreatLinkerWarningAsErrors>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -148,15 +152,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Comm.c" />
+    <ClCompile Include="FarCall.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Module.c" />
+    <ClCompile Include="ProtectProcess.c" />
     <ClCompile Include="RW.cpp" />
     <ClCompile Include="RwHelper.c" />
     <ClCompile Include="Search.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comm.h" />
+    <ClInclude Include="FarCall.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="ProtectProcess.h" />
     <ClInclude Include="RW.h" />
     <ClInclude Include="RwHelper.h" />
     <ClInclude Include="Search.h" />

@@ -18,7 +18,8 @@ EXTERN_C BOOLEAN WINAPI AR_DriverLoad() {
 	if (AR_TestComm()) {
 		return TRUE;
 	}
-	return installDriver(DriverName, DriverDir);
+	installDriver(DriverName, DriverDir);
+	return AR_TestComm();
 }
 
 EXTERN_C BOOLEAN WINAPI AR_UnDriverLoad() {
@@ -66,4 +67,30 @@ EXTERN_C BOOLEAN WINAPI AR_QueryMemory(DWORD pid, ULONG64 BaseAddress, PMEMORY_B
 	memcpy(memInfo, &info.memInfo, sizeof(MEMORY_BASIC_INFORMATION));
 
 	return bRet;
+}
+
+EXTERN_C BOOLEAN WINAPI AR_EnableProtectProcess(DWORD pid) {
+	ProtectInfo info = { 0 };
+	info.pid = pid;
+	info.state = PROTECT_ENABLE;
+
+	return DriverComm(CMD_PROTECT_PROCESS, &info, sizeof(ProtectInfo));
+
+}
+EXTERN_C BOOLEAN WINAPI AR_DisableProtectProcess(DWORD pid) {
+	ProtectInfo info = { 0 };
+	info.pid = pid;
+	info.state = PROTECT_DISABLE;
+
+	return DriverComm(CMD_PROTECT_PROCESS, &info, sizeof(ProtectInfo));
+
+}
+EXTERN_C BOOLEAN WINAPI AR_RemoteCall(DWORD pid, PVOID shellcode, ULONG64 shellcodeSize) {
+	RemoteCallInfo info = { 0 };
+	info.pid = pid;
+	info.shellcode = (ULONG64)shellcode;
+	info.shellcodeSize = shellcodeSize;
+
+	return DriverComm(CMD_REMOTE_CALL, &info, sizeof(RemoteCallInfo));
+
 }

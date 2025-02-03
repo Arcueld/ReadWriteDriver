@@ -6,3 +6,6 @@ LIBRARY
 		AR_ReadMemory
 		AR_WriteMemory
 		AR_QueryMemory
+		AR_EnableProtectProcess
+		AR_DisableProtectProcess
+		AR_RemoteCall

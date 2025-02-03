@@ -37,6 +37,12 @@
     <ClCompile Include="RwHelper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProtectProcess.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FarCall.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -52,6 +58,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RwHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtectProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FarCall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,7 @@
 #include "Module.h"
 
+
+
 // get Ring3 Moudle By Traversal InLoadOrderLinks
 ULONG_PTR GetModuleX32(PEPROCESS pEprocess,PPEB32 peb,PUNICODE_STRING moduleName, PULONG_PTR sizeImage) {
 
@@ -110,7 +112,7 @@ NTSTATUS QueryMemory(HANDLE pid, ULONG64 targetAddr, PMEMORY_BASIC_INFORMATION p
 	PMEMORY_BASIC_INFORMATION memInfo = (PMEMORY_BASIC_INFORMATION)ExAllocatePool(NonPagedPool, sizeof(MEMORY_BASIC_INFORMATION));
 	memset(memInfo, 0, sizeof(MEMORY_BASIC_INFORMATION));
 	SIZE_T retSize = 0;
-
+	
 	KeStackAttachProcess(pEprocess, &apcState);
 	status = ZwQueryVirtualMemory(NtCurrentProcess(), targetAddr, MemoryBasicInformation, memInfo, sizeof(MEMORY_BASIC_INFORMATION), &retSize);
 	KeUnstackDetachProcess(&apcState);

@@ -1,6 +1,7 @@
 #pragma once
 #include <ntifs.h>
 
+
 struct _EX_PUSH_LOCK
 {
     union
@@ -754,6 +755,7 @@ typedef struct _MMEMORY_BASIC_INFORMATION
 // 	ULONG Protect;
 // 	ULONG Type;
 // } MEMORY_BASIC_INFORMATION32, * PMEMORY_BASIC_INFORMATION32;
+
 
 NTSTATUS QueryMemory(HANDLE pid, ULONG64 targetAddr, PMEMORY_BASIC_INFORMATION pInfo);
 
